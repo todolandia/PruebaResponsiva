@@ -95,6 +95,26 @@ transform:scale(1.05);
 background:#00e676;
 }
 
+.installButton{
+display:none;
+margin-top:20px;
+background:#2962ff;
+padding:15px 35px;
+font-size:18px;
+border-radius:10px;
+border:none;
+color:white;
+cursor:pointer;
+font-weight:600;
+transition:0.3s;
+box-shadow:0 5px 20px rgba(0,0,0,0.4);
+}
+
+.installButton:hover{
+transform:scale(1.05);
+background:#448aff;
+}
+
 .secure{
 margin-top:20px;
 opacity:0.7;
@@ -142,32 +162,62 @@ $1200 MXN
 Inscribirme y pagar
 </a>
 
+<br>
+
+<button id="installBtn" class="installButton">
+📲 Instalar App CITZapopan
+</button>
+
 <p class="secure">
 Pago seguro con Mercado Pago • Tarjeta • Débito • OXXO
 </p>
 
 </div>
-  <button id="installBtn" style="
-margin-top:20px;
-background:#2962ff;
-color:white;
-border:none;
-padding:15px 35px;
-font-size:18px;
-border-radius:10px;
-cursor:pointer;
-display:none;
-">
-📲 Instalar App CITZapopan
-</button>
 
 <script>
 
+/* registrar service worker */
+
 if ("serviceWorker" in navigator) {
 navigator.serviceWorker.register("service-worker.js")
-.then(() => console.log("App instalada"))
+.then(() => console.log("Service Worker registrado"))
 .catch(error => console.log("Error:", error));
 }
+
+/* instalación de PWA */
+
+let deferredPrompt;
+const installBtn = document.getElementById("installBtn");
+
+window.addEventListener("beforeinstallprompt", (e) => {
+
+e.preventDefault();
+
+deferredPrompt = e;
+
+installBtn.style.display = "inline-block";
+
+});
+
+installBtn.addEventListener("click", async () => {
+
+if (!deferredPrompt) return;
+
+deferredPrompt.prompt();
+
+const { outcome } = await deferredPrompt.userChoice;
+
+if (outcome === "accepted") {
+
+console.log("Usuario instaló la app");
+
+}
+
+deferredPrompt = null;
+
+installBtn.style.display = "none";
+
+});
 
 </script>
 
